@@ -1,0 +1,12 @@
+outputs = "All"
+
+[modules]
+left = [ "Workspaces", "MediaPlayer" ]
+center = [ "Tempo" ]
+right = [ "Tray", "Privacy", "Settings" ]
+
+[appearance]
+scale_factor = 1
+
+[appearance.bar]
+surface = "transparent"
