@@ -3,6 +3,7 @@ return {
     terminal    = "konsole",
     fileManager = "nautilus",
     menu        = "hyprlauncher",
+    screenshot  = "omasnap",
     
     -- Default modificator key to call keybind functions
     mainMod     = "SUPER",
