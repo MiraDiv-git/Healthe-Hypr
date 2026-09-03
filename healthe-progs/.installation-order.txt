@@ -1,0 +1,33 @@
+::user:
+sudo pacman -S --needed --noconfirm git
+git clone https://github.com/MiraDiv-git/Healthe-Hypr.git
+
+
+
+::script:
+echo "-> Installing dependencies for Installer"
+
+sudo pacman -S --needed --noconfirm base-devel python git gtk4 gtk4-layer-shell libadwaita python-textual
+
+
+
+::installer:
+sudo pacman -S --needed --noconfirm hyprland hyprpaper hyprpolkitagent hyprwire xdg-desktop-portal-hyprland konsole nautilus wl-clipboard sddm
+
+sudo systemctl enable sddm
+
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si --noconfirm
+
+yay -S hyprland-per-window-layout ashell-bin omasnap-bin vicinae-bin nautilus-open-any-terminal
+
+cp config/hypr ~/.config/hypr
+cp config/ashell ~/.config/ashell
+cp config/vicinae ~/.config/vicinae
+
+chmod +x ./fixes/hide-window-buttons.sh && ./fixes/hide-window-buttons.sh
+chmod +x ./fixes/set-konsole-profile.sh && ./fixes/set-konsole-profile.sh
+chmod +x ./fixes/set-nautilus-terminal.sh && ./fixes/set-nautilus-terminal.sh
+
+chmod +x ./hyprland-manager/install.sh && ./hyprland-manager/install.sh

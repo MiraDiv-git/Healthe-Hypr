@@ -1,41 +1,4 @@
 # Healthe Hyprland
 
-
-# Requirements
-For developers only
-
-## General
-### Pacman
-- hyprland
-- hyprpaper
-- hyprpolkitagent
-- hyprwire
-- xdg-desktop-portal-hyprland
-
-## Hyprland
-### Pacman
-- konsole
-- nautilus
-- wl-clipboard
-
-### AUR
-- hyprland-per-window-layout-bin
-- ashell-bin
-- omasnap-bin
-- vicinae-bin
-
-## Healthe Hypr CLI
-### Pacman
-- python
-- git
-- base-devel
-
-### AUR
-- yay
-
-## System
-### Pacman
-- gdm
-
-### AUR
-- nautilus-open-any-terminal
+there will be description and other stuff  
+please wait for the installer release
