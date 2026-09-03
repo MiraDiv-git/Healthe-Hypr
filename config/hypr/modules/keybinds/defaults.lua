@@ -2,6 +2,7 @@ return {
 	-- Set your apps here
     terminal    = "konsole",
     fileManager = "nautilus",
+    browser     = "firefox",
     menu        = "vicinae open",
     screenshot  = "omasnap",
     
