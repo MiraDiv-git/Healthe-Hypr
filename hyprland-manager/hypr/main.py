@@ -76,6 +76,18 @@ pkg_subparsers.add_parser("list", help="List installed packages", parents=[pkg_p
 info_p = pkg_subparsers.add_parser("info", help="Show package info", parents=[pkg_parent])
 info_p.add_argument("package", help="Package name")
 
+# pkg update
+update_p = pkg_subparsers.add_parser("update", help="Fetches package database", parents=[pkg_parent])
+
+#pkg upgrade
+upgrade_p = pkg_subparsers.add_parser("upgrade", 
+    help="Upgrades selected package or everything if nothing scepified", parents=[pkg_parent])
+upgrade_p.add_argument("package", nargs="?", help="Package name")
+
+# pkg pull
+pull_p = pkg_subparsers.add_parser("pull", help="Pulls package from AUR", parents=[pkg_parent])
+pull_p.add_argument("package", help="Package name")
+
 args = parser.parse_args()
 
 
@@ -131,6 +143,18 @@ elif args.command == "pkg":
         exec(f"{pm} -Qe")
     elif args.pkg_action == "info":
         exec(f"{pm} -Si {args.package}")
+    elif args.pkg_action == "update":
+        exec(f"{pm} -Sy")
+    elif args.pkg_action == "upgrade":
+        if args.package:
+            exec(f"{pm} -Syu {args.package}")
+        else:
+            exec(f"{pm} -Syu")
+    elif args.pkg_action == "pull":
+        if is_aur:
+            exec(f"yay -G {args.package}")
+        else:
+            print("This command can be executed only with --aur")
     else:
         pkg_parser.print_help()
 
