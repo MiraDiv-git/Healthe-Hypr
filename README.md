@@ -7,7 +7,6 @@ For developers only
 ## General
 ### Pacman
 - hyprland
-- hyprlauncher
 - hyprpaper
 - hyprpolkitagent
 - hyprwire
@@ -23,6 +22,7 @@ For developers only
 - hyprland-per-window-layout-bin
 - ashell-bin
 - omasnap-bin
+- vicinae-bin
 
 ## Healthe Hypr CLI
 ### Pacman
@@ -33,7 +33,7 @@ For developers only
 ### AUR
 - yay
 
-## Other
+## System
 ### Pacman
 - gdm
 

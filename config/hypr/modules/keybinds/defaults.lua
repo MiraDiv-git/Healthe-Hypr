@@ -2,7 +2,7 @@ return {
 	-- Set your apps here
     terminal    = "konsole",
     fileManager = "nautilus",
-    menu        = "hyprlauncher",
+    menu        = "vicinae open",
     screenshot  = "omasnap",
     
     -- Default modificator key to call keybind functions
