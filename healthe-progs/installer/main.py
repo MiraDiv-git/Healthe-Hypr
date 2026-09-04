@@ -3,6 +3,14 @@ import sys
 import termios
 import tty
 import time
+import shutil
+from pathlib import Path
+
+HH_ROOT = Path(__file__).resolve().parents[1]
+PROGS_ROOT = HH_ROOT / "healthe-progs"
+FIX_ROOT = HH_ROOT / "fixes"
+CONF_ROOT = HH_ROOT / "config"
+HH_TEMP = HH_ROOT / ".temp"
 
 class Color:
     RESET = "\033[0m"
@@ -40,7 +48,6 @@ sddm
 """.strip().splitlines() if pkg.strip()]
 
 PKGS_AUR = [pkg.strip() for pkg in """
-yay
 hyprland-per-window-layout
 ashell-bin
 omasnap-bin
@@ -150,6 +157,79 @@ def add_timer(seconds: int = 5, message: str = "Continuing in"):
         print("\033[?25h", end="", flush=True)
 
 
+##################
+### Installers ###
+##################
+
+def copy_configs():
+    print(f"\n{Color.BOLD}>> Copying configs...{Color.RESET}\n")
+    target_dir = Path("~/.config").expanduser()
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    for item in CONF_ROOT.iterdir():
+        if item.name == "konsole":
+            continue
+
+        dest = target_dir / item.name
+        print(f"{Color.PREFIX}>> Copying {item.name} to {dest}...{Color.RESET}")
+
+        if item.is_dir():
+            shutil.copytree(item, dest, dirs_exist_ok=True)
+        else:
+            shutil.copy(item, dest)
+
+
+def run_all_fixes():
+    print(f"\n{Color.BOLD}>> Running fixes...{Color.RESET}\n")
+    
+    for script in sorted(FIX_ROOT.glob("*.sh")):
+        print(f"{Color.PREFIX}>> Executing {script.name}...{Color.RESET}")
+        subprocess.run(["bash", str(script)], check=True)
+    
+
+def install_pkgs():
+    print(f"\n{Color.BOLD}>> Installing packages...{Color.RESET}\n")
+    cmd = ["sudo", "pacman", "-S", "--needed", "--noconfirm"] + PKGS_ARCH
+    subprocess.run(cmd, check=True)
+
+
+def install_yay():
+    print(f"\n{Color.BOLD}>> Installing yay...{Color.RESET}\n")
+    if shutil.which("yay") is None:
+        yay_temp = HH_TEMP / "yay"
+        
+        HH_TEMP.mkdir(parents=True, exist_ok=True)
+        
+        try:
+            print(f"{Color.PREFIX}>> Cloning yay from AUR...{Color.RESET}")
+            cmd_clone = ["git", "clone", "https://aur.archlinux.org/yay.git", str(yay_temp)]
+            subprocess.run(cmd_clone, check=True)
+
+            print(f"{Color.PREFIX}>> Building yay...{Color.RESET}")
+            cmd_make = ["makepkg", "-si", "--noconfirm"]
+            subprocess.run(cmd_make, cwd=str(yay_temp), check=True)
+            
+        finally:
+            if yay_temp.exists():
+                print(f"{Color.PREFIX}>> Cleaning up...{Color.RESET}")
+                shutil.rmtree(yay_temp)
+    else:
+        print(f"{Color.PREFIX}yay is already installed. Skipping...{Color.RESET}")
+
+
+def install_aur_pkgs():
+    print(f"\n{Color.BOLD}>> Installing AUR packages (using yay)...{Color.RESET}\n")
+    cmd = ["yay", "-S", "--needed", "--noconfirm"] + PKGS_AUR
+    subprocess.run(cmd, check=True)
+
+
+def install_hypr():
+    if config.get('install_hypr'):
+        print(f"\n{Color.BOLD}>> Installing Healthe Hypr Manager...{Color.RESET}\n")
+        script_path = PROGS_ROOT / "hyprland-manager/install.sh"
+        subprocess.run(["bash", str(script_path)], check=True)
+
+
 ##########################
 ### Installation Steps ###
 ##########################
@@ -174,7 +254,7 @@ def step_install_hypr():
     print(f"\n{Color.PREFIX}{message}{Color.RESET}\n")
 
     if add_yn("Install Healthe Hypr Manager", True):
-        pass
+        config['install_hypr'] = True
 
 
 def step_select_flavour():
@@ -193,7 +273,7 @@ def step_show_deps():
         arch_list = "\n".join(PKGS_ARCH)
         aur_list = "\n".join(PKGS_AUR)
         print(f"\n{Color.BOLD}Official repositories (extra){Color.RESET}:\n{arch_list}\n"
-              f"\n{Color.BOLD}Arch User Repository (AUR){Color.RESET}:\n{aur_list}\n")
+              f"\n{Color.BOLD}Arch User Repository (AUR){Color.RESET}:\nyay\n{aur_list}\n")
         
         wait_key()
 
@@ -204,13 +284,16 @@ def step_autoinstall():
     add_timer(5, "Installation starts in")
     clear_viewport()
 
-    print(f"\n{Color.BOLD}Installing packages...{Color.RESET}\n")
+    install_pkgs()
+    install_yay()
+    install_aur_pkgs()
+    copy_configs()
+    run_all_fixes()
+    install_hypr()
+    # 'sudo systemctl enable sddm' if DM is not installed
 
-    # Pseudocode
-    # cmd_arch = ["sudo", "pacman", "-S", "--needed", "--noconfirm"] + PKGS_ARCH
-    # cmd_aur = ["yay", "-S", "--needed", "--noconfirm"] + PKGS_AUR
-    # subprocess.run(cmd_arch)
-    # subprocess.run(cmd_aur)
+    print(f"{Color.HEADER}Installed successfully!{Color.RESET}")
+    print(f"{Color.PREFIX}To apply changes - relogin to 'Hyprland' session.{Color.RESET}")
 
 
 def step_confonly():
@@ -219,7 +302,7 @@ def step_confonly():
     add_timer(5, "Installation starts in")
     clear_viewport()
 
-    print(f"\n{Color.BOLD}Copying configs...{Color.RESET}\n")
+    print(f"\n{Color.BOLD}PSEUDO: Copying configs...{Color.RESET}\n")
 
 
 ########################################
