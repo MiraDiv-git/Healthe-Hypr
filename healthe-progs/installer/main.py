@@ -6,7 +6,7 @@ import time
 import shutil
 from pathlib import Path
 
-HH_ROOT = Path(__file__).resolve().parents[1]
+HH_ROOT = Path(__file__).resolve().parents[2]
 PROGS_ROOT = HH_ROOT / "healthe-progs"
 FIX_ROOT = HH_ROOT / "fixes"
 CONF_ROOT = HH_ROOT / "config"
@@ -35,6 +35,7 @@ class Term:
 config = {}
 
 PKGS_ARCH = [pkg.strip() for pkg in """
+base-devel
 hyprland 
 hyprpaper 
 hyprpolkitagent 
@@ -189,7 +190,7 @@ def run_all_fixes():
 
 def install_pkgs():
     print(f"\n{Color.BOLD}>> Installing packages...{Color.RESET}\n")
-    cmd = ["sudo", "pacman", "-S", "--needed", "--noconfirm"] + PKGS_ARCH
+    cmd = ["sudo", "pacman", "-Syu", "--needed", "--noconfirm"] + PKGS_ARCH
     subprocess.run(cmd, check=True)
 
 
@@ -284,6 +285,7 @@ def step_autoinstall():
     add_timer(5, "Installation starts in")
     clear_viewport()
 
+    # 'sudo pacman -Sy'
     install_pkgs()
     install_yay()
     install_aur_pkgs()
