@@ -1,3 +1,8 @@
+import subprocess
+import sys
+import termios
+import tty
+
 class Color:
     RESET = "\033[0m"
     BOLD = "\033[1m"
@@ -18,6 +23,28 @@ class Term:
 
 config = {}
 
+PKGS_ARCH = [pkg.strip() for pkg in """
+hyprland 
+hyprpaper 
+hyprpolkitagent 
+hyprwire 
+xdg-desktop-portal-hyprland 
+mako 
+konsole 
+nautilus 
+wl-clipboard 
+sddm
+""".strip().splitlines() if pkg.strip()]
+
+PKGS_AUR = [pkg.strip() for pkg in """
+yay
+hyprland-per-window-layout
+ashell-bin
+omasnap-bin
+vicinae-bin
+nautilus-open-any-terminal
+""".strip().splitlines() if pkg.strip()]
+
 
 def print_header():
     print(Term.CLEAR, end="")
@@ -26,6 +53,25 @@ def print_header():
 
 def clear_viewport():
     print_header()
+
+
+def handle_exit():
+    clear_viewport()
+    print(f"\n{Color.ERROR}{Color.BOLD}Installation interrupted.{Color.RESET}\n")
+    sys.exit(1)
+
+
+def wait_key():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+
+    print(f"{Color.PREFIX}Press any key to continue...{Color.RESET}", end="", flush=True)
+
+    try:
+        tty.setraw(fd)
+        sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
 
 def add_yn(prompt: str) -> bool:
@@ -72,8 +118,8 @@ def step_welcome():
     
     if not add_yn("Proceed installation"):
         clear_viewport()
-        print(f"\n{Color.ERROR}{Color.BOLD}Installation interrupted.{Color.RESET}\n")
-        exit(1)
+        print(f"\n{Color.ERROR}{Color.BOLD}Installation cancelled.{Color.RESET}\n")
+        sys.exit(1)
 
 
 def step_select_flavour():
@@ -85,14 +131,32 @@ def step_select_flavour():
     add_prompt("Select your flavour", flavours, "flavour", default_idx=1)
 
 
+def step_show_deps():
+    clear_viewport()
+    print()
+    if add_yn("Show installation dependencies"):
+        arch_list = "\n".join(PKGS_ARCH)
+        aur_list = "\n".join(PKGS_AUR)
+        print(f"\n{Color.BOLD}Official repositories (extra){Color.RESET}:\n{arch_list}\n"
+              f"\n{Color.BOLD}Arch User Repository (AUR){Color.RESET}:\n{aur_list}\n")
+        
+        wait_key()
+
+
 def step_autoinstall():
     clear_viewport()
-    print(f"\n{Color.BOLD}Installing...{Color.RESET}")
+    print(f"\n{Color.BOLD}Installing packages...{Color.RESET}\n")
+
+    # Pseudocode
+    # cmd_arch = ["sudo", "pacman", "-S", "--needed", "--noconfirm"] + PKGS_ARCH
+    # cmd_aur = ["yay", "-S", "--needed", "--noconfirm"] + PKGS_AUR
+    # subprocess.run(cmd_arch)
+    # subprocess.run(cmd_aur)
 
 
 def step_confonly():
     clear_viewport()
-    print(f"\n{Color.BOLD}Copying configs...{Color.RESET}")
+    print(f"\n{Color.BOLD}Copying configs...{Color.RESET}\n")
 
 
 def main():
@@ -100,11 +164,17 @@ def main():
     step_select_flavour()
 
     flavour = config.get('flavour')
+    
     if flavour == 'Everything':
+        step_show_deps()
         step_autoinstall()
     elif flavour == 'Guided':
         pass
     elif flavour == 'Config only':
         step_confonly()
 
-main()
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        handle_exit()
