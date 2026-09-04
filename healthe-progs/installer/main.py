@@ -33,32 +33,32 @@ def add_yn(prompt: str) -> bool:
     return ch == 'y'
 
 
-def add_prompt(title: str, options: list[str], config_key: str, default_idx: int = 1):
+def add_prompt(title: str, options: list[tuple[str, str]], config_key: str, default_idx: int = 1):
     error_msg = ""
     while True:
         clear_viewport()
         print(f"\n{Color.BOLD}{title}:{Color.RESET}\n")
         
         for i, opt in enumerate(options, 1):
-            marker = " (default)" if i == default_idx else ""
-            print(f" {Color.YN}{i}){Color.RESET} {opt}{Color.PREFIX}{marker}{Color.RESET}")
-        print()
-        
+            name, desc = opt
+            marker = f" {Color.HEADER}(default){Color.RESET}" if i == default_idx else ""
+            
+            print(f" {Color.YN}{i}){Color.RESET} {Color.BOLD}{name}{Color.RESET}{marker}")
+            print(f"    {Color.PREFIX}{desc}{Color.RESET}\n")
+            
         if error_msg:
             print(f"{Color.ERROR}{error_msg}{Color.RESET}\n")
             
-        choice = input(
-            f"{Color.YN}>>{Color.RESET} "
-        ).strip()
+        choice = input(f"{Color.YN}>>{Color.RESET} ").strip()
         
         if choice == "":
-            config[config_key] = options[default_idx - 1]
+            config[config_key] = options[default_idx - 1][0]
             break
             
         if choice.isdigit():
             idx = int(choice)
             if 1 <= idx <= len(options):
-                config[config_key] = options[idx - 1]
+                config[config_key] = options[idx - 1][0]
                 break
                 
         error_msg = f"Invalid choice '{choice}'. Please enter a number from 1 to {len(options)}."
@@ -78,18 +78,33 @@ def step_welcome():
 
 def step_select_flavour():
     flavours = [
-        "Everything - install all that template contains",
-        "Config only - install just config layout",
-        "Guided - select which components to install"
+        ("Everything", "Install all that template contains"),
+        ("Guided", "Select which components to install manually"),
+        ("Config only", "Install just config layout")
     ]
     add_prompt("Select your flavour", flavours, "flavour", default_idx=1)
+
+
+def step_autoinstall():
+    clear_viewport()
+    print(f"\n{Color.BOLD}Installing...{Color.RESET}")
+
+
+def step_confonly():
+    clear_viewport()
+    print(f"\n{Color.BOLD}Copying configs...{Color.RESET}")
 
 
 def main():
     step_welcome()
     step_select_flavour()
-    
-    clear_viewport()
-    print(f"\n{Color.HEADER}Done!{Color.RESET} Selected flavour: {Color.BOLD}{config.get('flavour')}{Color.RESET}\n")
+
+    flavour = config.get('flavour')
+    if flavour == 'Everything':
+        step_autoinstall()
+    elif flavour == 'Guided':
+        pass
+    elif flavour == 'Config only':
+        step_confonly()
 
 main()
