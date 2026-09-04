@@ -7,12 +7,12 @@ git clone https://github.com/MiraDiv-git/Healthe-Hypr.git
 ::script:
 echo "-> Installing dependencies for Installer"
 
-sudo pacman -S --needed --noconfirm base-devel python git gtk4 gtk4-layer-shell libadwaita python-textual
+sudo pacman -S --needed --noconfirm base-devel python git gtk4 gtk4-layer-shell libadwaita
 
 
 
 ::installer:
-sudo pacman -S --needed --noconfirm hyprland hyprpaper hyprpolkitagent hyprwire xdg-desktop-portal-hyprland konsole nautilus wl-clipboard sddm
+sudo pacman -S --needed --noconfirm hyprland hyprpaper hyprpolkitagent hyprwire xdg-desktop-portal-hyprland mako konsole nautilus wl-clipboard sddm
 
 sudo systemctl enable sddm
 
