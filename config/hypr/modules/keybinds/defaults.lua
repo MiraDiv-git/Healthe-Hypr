@@ -1,6 +1,6 @@
 return {
 	-- Set your apps here
-    terminal    = "konsole",
+    terminal    = "foot",
     fileManager = "nautilus",
     browser     = "firefox",
     menu        = "vicinae open",

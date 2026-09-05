@@ -37,11 +37,11 @@ config = {}
 PKGS_ARCH = [pkg.strip() for pkg in """
 adwaita-icon-theme 
 base-devel 
+foot 
 hyprland 
 hyprpaper 
 hyprpolkitagent 
-hyprwire 
-konsole 
+hyprwire  
 mako 
 nautilus 
 sddm 
@@ -169,9 +169,6 @@ def copy_configs():
     target_dir.mkdir(parents=True, exist_ok=True)
 
     for item in CONF_ROOT.iterdir():
-        if item.name == "konsole":
-            continue
-
         dest = target_dir / item.name
         print(f"{Color.PREFIX}>> Copying {item.name} to {dest}...{Color.RESET}")
 
@@ -240,7 +237,8 @@ def step_welcome():
     clear_viewport()
     print(f"\n{Color.PREFIX}This installer will guide you through the config\n"
           f"and let you select your best Healthy flavour.{Color.RESET}\n")
-    print(f"{Color.WARNING}Warning:{Color.RESET} your {Color.FOLDER}~/.config/hypr{Color.RESET} folder will be completely overwritten.\n")
+    print(f"{Color.WARNING}Warning:{Color.RESET} installation will {Color.BOLD}completely overwrite{Color.RESET} next configs:\n"
+          f"{Color.FOLDER}    ashell\n    foot\n    hypr\n    vicinae\n{Color.RESET}")
     
     if not add_yn("Proceed with installation"):
         clear_viewport()
