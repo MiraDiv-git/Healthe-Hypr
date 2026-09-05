@@ -35,25 +35,26 @@ class Term:
 config = {}
 
 PKGS_ARCH = [pkg.strip() for pkg in """
-base-devel
+adwaita-icon-theme 
+base-devel 
 hyprland 
 hyprpaper 
 hyprpolkitagent 
 hyprwire 
-xdg-desktop-portal-hyprland 
-mako 
 konsole 
+mako 
 nautilus 
+sddm 
 wl-clipboard 
-sddm
+xdg-desktop-portal-hyprland 
 """.strip().splitlines() if pkg.strip()]
 
 PKGS_AUR = [pkg.strip() for pkg in """
-hyprland-per-window-layout
-ashell-bin
-omasnap-bin
-vicinae-bin
-nautilus-open-any-terminal
+ashell-bin 
+hyprland-per-window-layout 
+nautilus-open-any-terminal 
+omasnap-bin 
+vicinae-bin 
 """.strip().splitlines() if pkg.strip()]
 
 
@@ -274,7 +275,7 @@ def step_show_deps():
         arch_list = "\n".join(PKGS_ARCH)
         aur_list = "\n".join(PKGS_AUR)
         print(f"\n{Color.BOLD}Official repositories (extra){Color.RESET}:\n{arch_list}\n"
-              f"\n{Color.BOLD}Arch User Repository (AUR){Color.RESET}:\nyay\n{aur_list}\n")
+              f"\n{Color.BOLD}Arch User Repository (AUR){Color.RESET}:\n{aur_list}\nyay\n")
         
         wait_key()
 
