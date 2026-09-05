@@ -203,11 +203,11 @@ def install_yay():
         HH_TEMP.mkdir(parents=True, exist_ok=True)
         
         try:
-            print(f"{Color.PREFIX}>> Cloning yay from AUR...{Color.RESET}")
+            print(f"\n{Color.PREFIX}>> Cloning yay from AUR...{Color.RESET}\n")
             cmd_clone = ["git", "clone", "https://aur.archlinux.org/yay.git", str(yay_temp)]
             subprocess.run(cmd_clone, check=True)
 
-            print(f"{Color.PREFIX}>> Building yay...{Color.RESET}")
+            print(f"\n{Color.PREFIX}>> Building yay...{Color.RESET}\n")
             cmd_make = ["makepkg", "-si", "--noconfirm"]
             subprocess.run(cmd_make, cwd=str(yay_temp), check=True)
             
